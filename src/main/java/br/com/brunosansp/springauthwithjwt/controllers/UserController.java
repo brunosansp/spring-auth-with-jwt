@@ -52,5 +52,4 @@ public class UserController {
         return ResponseEntity.status(status).body(valid);
     }
     
-    // continuar em https://www.youtube.com/watch?v=WM8Ty4ITcFc&list=PLTN1gMq8EHuIpxyecEp04TvLr3TQbzMRL
 }
