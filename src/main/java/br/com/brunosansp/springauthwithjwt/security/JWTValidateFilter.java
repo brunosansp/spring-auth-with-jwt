@@ -23,6 +23,7 @@ public class JWTValidateFilter extends BasicAuthenticationFilter {
         super(authenticationManager);
     }
     
+    // a primeira coisa que precisamos é interceptar o header/cabeçalho
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -30,26 +31,34 @@ public class JWTValidateFilter extends BasicAuthenticationFilter {
         // pegar o atributo do header
         String attribute = request.getHeader(ATTRIBUTE_HEADER);
         
+        // verificar se não é nulo
         if (attribute == null) {
             chain.doFilter(request, response);
             return;
         }
         
-        // pegar o prefixo do tipo de token
+        // verificar se tem o prefixo informando o tipo do token
         if (!attribute.startsWith(ATTRIBUTE_PREFIX)) {
             chain.doFilter(request, response);
             return;
         }
         
+//        if (attribute == null && !attribute.startsWith(ATTRIBUTE_PREFIX)) {
+//            chain.doFilter(request, response);
+//            return;
+//        }
+        
+        // pegar o prefixo do tipo de token
         String token = attribute.replace(ATTRIBUTE_PREFIX, "");
         
-        // pegar username password
+        // pegar UsernamePasswordAuthenticationToken - vai devolver os dados do usuário se válido
         UsernamePasswordAuthenticationToken authenticationToken = getAuthenticationToken(token);
         
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         chain.doFilter(request, response);
     }
     
+    // pegar UsernamePasswordAuthenticationToken - vai devolver os dados do usuário se válido
     private UsernamePasswordAuthenticationToken getAuthenticationToken(String token) {
         String user = JWT.require(Algorithm.HMAC512(JWTAuthenticateFilter.TOKEN_PASSWORD))
             .build()
